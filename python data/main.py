@@ -1,7 +1,7 @@
 import pandas as pd
 import mysql.connector
 import matplotlib.pyplot as plt
-import plotly.express as px
+import seaborn as sns
 
 config = {
     'user': 'root',
@@ -21,12 +21,12 @@ try:
 
     df = pd.read_csv(file_path)
     
-    # Verify column names
+    
+
     print("Columns in DataFrame:", df.columns)
 
-    # Visualization 1: Top 10 Companies by Revenue
+    # Visualization 1: Bar Chart 
     df_sorted = df.sort_values(by='Revenue', ascending=False).head(10)
-    plt.figure(figsize=(12, 8))
     plt.bar(df_sorted['Company'], df_sorted['Revenue'], color='skyblue')
     plt.xlabel('Company Name')
     plt.ylabel('Revenue')
@@ -35,20 +35,38 @@ try:
     plt.tight_layout()
     plt.show()
 
-    # Visualization 2: Pie Chart of Revenue Distribution by Industry
+    # Visualization 2: Pie Chart 
     df_industry_revenue = df.groupby('Industry')['Revenue'].sum().reset_index()
-    fig = px.pie(df_industry_revenue, names='Industry', values='Revenue', 
-                title='Revenue Distribution by Industry',
-                labels={'Industry': 'Industry', 'Revenue': 'Revenue'})
-    fig.update_traces(textinfo='percent+label')
-    fig.show()
+    plt.pie(df_industry_revenue['Revenue'], labels=df_industry_revenue['Industry'])
+    plt.title('Revenue Distribution by Industry')
+    plt.tight_layout()
+    plt.show()
 
-    # Visualization 3: Scatter Plot of Revenue vs. Profit by Industry
-    fig = px.scatter(df, x='Revenue', y='Profits', color='Industry',
-                     title='Revenue vs. Profit by Industry',
-                     labels={'Revenue': 'Revenue', 'Profits': 'Profit'})
-    fig.show()
+    # Visualization 3: Scatter 
+    sns.scatterplot(data=df, x='Revenue', y='Profits', hue='Industry')
+    plt.xlabel('Revenue')
+    plt.ylabel('Profit')
+    plt.title('Revenue vs. Profit by Industry')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
+    # Visualization 4: Histogram 
+    plt.hist(df['Profits'], bins=20, color='green', edgecolor='black')
+    plt.xlabel('Profits')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Company Profits')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+    # Visualization 4: Box 
+    df.boxplot(column='Revenue', by='Industry', grid=True)
+    plt.xlabel('Industry')
+    plt.ylabel('Revenue')
+    plt.title('Box Plot of Revenue by Industry')
+    plt.suptitle('REVENUE')
+    plt.show()
 except mysql.connector.Error as err:
     print("Error:", err)
 
